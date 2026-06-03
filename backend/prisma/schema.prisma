@@ -1,0 +1,53 @@
+// Prisma schema — Spur AI Live Chat Agent
+// sessionId (frontend) == Conversation.id
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Sender {
+  USER
+  AI
+  SYSTEM
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  // Extensibility: the same conversation model serves web, whatsapp, instagram, etc.
+  channel   String    @default("web")
+  metadata  Json?
+  messages  Message[]
+
+  @@index([createdAt])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         Sender
+  text           String       @db.Text
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+// FAQ / domain knowledge for the fictional store.
+// Stored in DB (not hardcoded) so it's editable and injected into the system prompt.
+model KnowledgeItem {
+  id        String   @id @default(uuid())
+  topic     String // shipping | returns | hours | payments | orders | general
+  question  String
+  answer    String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([topic])
+}

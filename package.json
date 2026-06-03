@@ -1,0 +1,26 @@
+{
+  "name": "spur-ai-chat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Spur — AI Live Chat Agent (founding-engineer take-home)",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "test": "npm test -w backend",
+    "db:migrate": "npm run prisma:migrate -w backend",
+    "db:seed": "npm run seed -w backend",
+    "db:setup": "npm run prisma:migrate -w backend && npm run seed -w backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
